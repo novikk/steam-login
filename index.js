@@ -21,7 +21,7 @@ module.exports.middleware = function(opts)
 	return function(req, res, next) {
 		if(req.session && req.session.steamUser)
 		{
-			req.user = req.session.steamUser;
+			req.user_steam = req.session.steamUser;
 			req.logout = logout(req);
 		}
 
@@ -32,7 +32,7 @@ module.exports.middleware = function(opts)
 module.exports.enforceLogin = function(redirect)
 {
 	return function(req, res, next) {
-		if(!req.user)
+		if(!req.user_steam)
 			return res.redirect(redirect);
 		next();
 	};
@@ -48,10 +48,10 @@ module.exports.verify = function()
 				next('Failed to authenticate user.');
 			fetchIdentifier(result.claimedIdentifier)
 				.then(function(user) {
-					req.user = user;
+					req.user_steam = user;
 					if(useSession)
 					{
-						req.session.steamUser = req.user;
+						req.session.steamUser = req.user_steam;
 						req.logout = logout(req);
 					}
 					next();
@@ -109,6 +109,6 @@ function logout(req)
 {
 	return function() {
 		delete req.session.steamUser;
-		req.user = null;
+		req.user_steam = null;
 	}
 }
